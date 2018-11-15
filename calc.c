@@ -4,15 +4,15 @@
 
 typedef struct
 {
-    char oper;
-    double nilai;
-    int prio;
-} elmt;
-typedef struct 
+    char oper; /* Tempat menyimpan operator */
+    double nilai; /* Tempat menyimpan nilai real operan */
+    int prio; /* Prioritas operator */
+} elmt; /* Type elemen tabel */
+typedef struct
 {
-    elmt matArr[101];
-    int Neff;
-} Tabel;
+    elmt matArr[101]; /* Array */
+    int Neff; /* Banyaknya elemen efektif array */
+} Tabel; /* Type array */
 
 #define OperUndef '?'
 #define NilaiUndef -999
@@ -24,7 +24,7 @@ typedef struct
 int Priority(char X);
 /* Mengembalikan prioritas operator relatif terhadap jenisnya,
 seperti '()' memiliki prioritas 4, '^' memiliki prioritas 3,
- '*' dan '/' memiliki prioritas 2, dan '+' dan '-' prioritas 1 */
+'*' dan '/' memiliki prioritas 2, dan '+' dan '-' prioritas 1 */
 int charToInt(char X);
 /* Mengubah karakter ke integer yang bersesuaian */
 void Rapihin(Tabel *T);
@@ -42,7 +42,7 @@ boolean ElmtUndef(Tabel T, int i);
 /* Mengembalikan true bila elemen-elemen di indeks ke i adalah elemen Undef semua */
 
 /* KAMUS GLOBAL */
-boolean MathErr = false;
+boolean MathErr = false; /* Untuk stop codition saat menghitung bertemu dengan math error */
 
 int main()
 {
@@ -54,12 +54,15 @@ int main()
     Tabel T;
 
     /* ALGORITMA */
+    /* Membaca string */
     scanf("%s", &ekspresi[0]);
+    /* Memasukkan string ke array */
     i = 0; j = 0; baseprio = 0;
     while (ekspresi[i] != '\0')
     {
         if (!IsOperator(ekspresi[i]))
         {
+            /* Untuk menghitung nilai real dari masing-masing operan */
             temp = 0;
             while (!IsOperator(ekspresi[i]) && ekspresi[i] != '\0')
             {
@@ -67,6 +70,7 @@ int main()
                 temp = temp*10 + (double) charToInt(C);
                 i++;
             }
+            /* Untuk menghitung nilai dibelakang koma */
             if (ekspresi[i] == '.')
             {
                 i++; k = 1;
@@ -81,7 +85,7 @@ int main()
             Oper(T, j) = OperUndef;
             Prio(T, j) = Priority('0') + baseprio;
         }
-        else
+        else /* Jika karakter di string sekarang adalah operator */
         {
             if (ekspresi[i] != '(' && ekspresi[i] != ')')
             {
@@ -91,30 +95,37 @@ int main()
             }
             else
             {
+                /* Karena kurung hanya meningkatkan prioritas suatu operasi,
+                kurung tidak dimasukkan ke array tetapi hanya menambah base priority */
                 if (ekspresi[i] == '(') baseprio += 4;
+                /* Jika kurung tutup sudah ditemukan, turunkan kembali base priority */
                 else baseprio -= 4;
+                /* Karena kurung tidak masuk array maka iterator j harus tidak berubah */
                 j--;
             }
             i++;
         }
         j++;
     }
-    NEff(T) = j;/* 
-    for (k = 0; k < j; k++)
-    {
-        printf("%d\nOperan = %c\nNilai = %.2f\nPriority = %d\n\n", k, Oper(T, k), Nilai(T, k), Prio(T, k));
-    } */
+    NEff(T) = j;
     while (NEff(T) != 1 && !MathErr)
     {
+        /* Mencari indeks tempat operator yang memiliki prioritas paling tinggi */
         i = IdxHighPrio(T);
-        /* printf("Indeks = %d\n", i); */
+        /* Menghitung hasil operasi */
         Hitung(&T, i);
     }
+    /* Jika MATH ERROR terjadi maka tampilkan pesan */
     if (MathErr) printf("MATH ERROR\n");
+    /* Jika tidak tampilkan hasi perhitungan */
     else printf("Hasil operasi = %.2f\n", Nilai(T, 0));
 }
 
+
 int Priority(char X)
+/* Mengembalikan prioritas operator relatif terhadap jenisnya,
+seperti '()' memiliki prioritas 4, '^' memiliki prioritas 3,
+'*' dan '/' memiliki prioritas 2, dan '+' dan '-' prioritas 1 */
 {
     /* KAMUS LOKAL */
     /* ALGORITMA */
@@ -130,6 +141,7 @@ int Priority(char X)
 }
 
 int charToInt(char X)
+/* Mengubah karakter ke integer yang bersesuaian */
 {
     /* KAMUS LOKAL */
     /* ALGORITMA */
@@ -149,6 +161,7 @@ int charToInt(char X)
 }
 
 int IdxHighPrio(Tabel T)
+/* Mengembalikan indeks tabel dengan operator prioritas tertinggi */
 {
     /* KAMUS LOKAL */
     int i;
@@ -167,6 +180,7 @@ int IdxHighPrio(Tabel T)
 }
 
 boolean IsOperator(char X)
+/* Mengembalikan true bila karakter yang dibaca adalah operator */
 {
     /* KAMUS LOKAL */
     /* ALGORITMA */
@@ -174,6 +188,7 @@ boolean IsOperator(char X)
 }
 
 void MakeUndef(Tabel *T, int i)
+/* Membuat elemen tabel ke i menjadi tak terdefinisi alias kosong */
 {
     /* KAMUS LOKAL */
     /* ALGORITMA */
@@ -183,6 +198,7 @@ void MakeUndef(Tabel *T, int i)
 }
 
 boolean ElmtUndef(Tabel T, int i)
+/* Mengembalikan true bila elemen-elemen di indeks ke i adalah elemen Undef semua */
 {
     /* KAMUS LOKAL */
     /* ALGORITMA */
@@ -190,14 +206,18 @@ boolean ElmtUndef(Tabel T, int i)
 }
 
 void Rapihin(Tabel *T)
+/* Merapihkan array sehingga rapat kiri */
 {
     /* KAMUS LOKAL */
     int IdxKos = 0, i, j;
 
     /* ALGORITMA */
+    /* Mencari tempat pertama terjadinya kekosongan pada array */
     while (!ElmtUndef(*T, IdxKos) && IdxKos < NEff(*T)) IdxKos++;
+    /* Mencari elemen yang tidak rapat kiri */
     i = IdxKos;
     while (ElmtUndef(*T, i) && i < NEff(*T)) i++;
+    /* Melakukan pemindahan */
     for (j = i; j < NEff(*T); j++)
     {
         Prio(*T, IdxKos) = Prio(*T, i);
@@ -206,17 +226,22 @@ void Rapihin(Tabel *T)
         MakeUndef(T, i);
         IdxKos++; i++;
     }
+    /* Dikarenakan adanya kekosongan, maka isi elemen tabel akan berkurang */
     j = i - IdxKos;
     NEff(*T) -= j;
 }
 
 void Hitung(Tabel *T, int i)
+/* Menghitung hasi dari operator di indeks i dan menympannya kembali di tabel
+lalu menghapus elemen-elemen tabel yang telah dihitung */
 {
     /* KAMUS LOKAL */
     int temp;
     double op1, op2, hasil = 0;
 
     /* ALGORITMA */
+    /* Jika elemen yang berprioritas tinggi adalah operan,
+    kurangi prioritasnya menjadi selevel dengan elemen diluarnya */
     if (Nilai(*T, i) != NilaiUndef)
     {
         Prio(*T, i) -= 4;
@@ -225,6 +250,7 @@ void Hitung(Tabel *T, int i)
     {
         op1 = Nilai(*T, i - 1);
         op2 = Nilai(*T, i + 1);
+         /* Menghitung hasi operasi yang sesuai dengan operatornya */
         switch (Oper(*T, i))
         {
             case '*':
@@ -252,7 +278,8 @@ void Hitung(Tabel *T, int i)
                     else MathErr = true;
                 }
         }
-        /* printf("%.2f %c %.2f = %.2f\n", op1, Oper(*T, i), op2, hasil); */
+        /* Memasukkan hasil agar tetap rapat, merapikan tabel,
+        membuat elemen yang telah dipakai menjadi Undefined */
         Nilai(*T, i - 1) = hasil;
         Oper(*T, i - 1) = OperUndef;
         Prio(*T, i - 1) = Prio(*T, i) - Priority(Oper(*T, i));

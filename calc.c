@@ -23,8 +23,8 @@ typedef struct
 
 int Priority(char X);
 /* Mengembalikan prioritas operator relatif terhadap jenisnya,
-seperti '()' memiliki prioritas 4, '^' memiliki prioritas 3,
-'*' dan '/' memiliki prioritas 2, dan '+' dan '-' prioritas 1 */
+seperti '^' memiliki prioritas 3,'*' dan '/' memiliki prioritas 2,
+dan '+' dan '-' prioritas 1 */
 int charToInt(char X);
 /* Mengubah karakter ke integer yang bersesuaian */
 void Rapihin(Tabel *T);
@@ -124,8 +124,8 @@ int main()
 
 int Priority(char X)
 /* Mengembalikan prioritas operator relatif terhadap jenisnya,
-seperti '()' memiliki prioritas 4, '^' memiliki prioritas 3,
-'*' dan '/' memiliki prioritas 2, dan '+' dan '-' prioritas 1 */
+seperti '^' memiliki prioritas 3,'*' dan '/' memiliki prioritas 2,
+dan '+' dan '-' prioritas 1 */
 {
     /* KAMUS LOKAL */
     /* ALGORITMA */

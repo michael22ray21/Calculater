@@ -21,12 +21,12 @@ void InputUser(Tabel *T,boolean *IsSyntaxTrue) {
 void InputToArray(string S, Tabel *T) {
   char LastChar, CurrChar;
   int i, neff, prio, nfrac;
-  infotype number;
+  infotype number, neg;
   boolean IsNeg, IsFrac;
 
   i = 0;
   prio = 0;
-  neff = 0;
+  neff = 0; neg = 1;
   number = 0;
   IsNeg = false;
   IsFrac = false;
@@ -48,8 +48,12 @@ void InputToArray(string S, Tabel *T) {
     else if (IsKurung(CurrChar)) {
 
       if (CurrChar == '(' && S[i+1] == '-') {
-        if (!IsNeg)
+        if (!IsNeg) {
           IsNeg = true;
+          neg *= -1;
+        }
+        else
+          neg *= -1;
       }
 
       else {
@@ -80,13 +84,14 @@ void InputToArray(string S, Tabel *T) {
         Prio(*T,neff) = prio;
 
         if (IsNeg && S[i+1]==')') {
-          Nilai(*T,neff) *= -1;
+          Nilai(*T,neff) *= neg;
           i++;
         }
         number = 0;
         IsFrac = false;
         nfrac = 1;
         IsNeg = false;
+        neg = 1;
       }
     }
     i++;

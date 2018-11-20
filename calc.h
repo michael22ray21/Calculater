@@ -16,14 +16,12 @@ typedef struct
     int Neff; /* Banyaknya elemen efektif array */
 } Tabel; /* Type array */
 
-#define OperUndef '?'
-#define NilaiUndef -999
+#define ElmtUndef 'E'
+#define OperUndef 'N'
 #define NEff(T) (T).Neff
 #define Oper(T, i) (T).matArr[i].oper
 #define Prio(T, i) (T).matArr[i].prio
 #define Nilai(T, i) (T).matArr[i].nilai
-
-extern boolean MathErr;
 
 int Priority(char X);
 /* Mengembalikan prioritas operator relatif terhadap jenisnya,
@@ -42,7 +40,5 @@ void Hitung(Tabel *T, int i);
 lalu menghapus elemen-elemen tabel yang telah dihitung */
 void MakeUndef(Tabel *T, int i);
 /* Membuat elemen tabel ke i menjadi tak terdefinisi alias kosong */
-boolean ElmtUndef(Tabel T, int i);
-/* Mengembalikan true bila elemen-elemen di indeks ke i adalah elemen Undef semua */
 
 #endif

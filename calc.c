@@ -14,8 +14,8 @@ typedef struct
     int Neff; /* Banyaknya elemen efektif array */
 } Tabel; /* Type array */
 
-#define OperUndef '?'
-#define NilaiUndef -999
+#define ElmtUndef 'E'
+#define OperUndef 'N'
 #define NEff(T) (T).Neff
 #define Oper(T, i) (T).matArr[i].oper
 #define Prio(T, i) (T).matArr[i].prio
@@ -38,8 +38,6 @@ void Hitung(Tabel *T, int i);
 lalu menghapus elemen-elemen tabel yang telah dihitung */
 void MakeUndef(Tabel *T, int i);
 /* Membuat elemen tabel ke i menjadi tak terdefinisi alias kosong */
-boolean ElmtUndef(Tabel T, int i);
-/* Mengembalikan true bila elemen-elemen di indeks ke i adalah elemen Undef semua */
 
 /* KAMUS GLOBAL */
 boolean MathErr = false; /* Untuk stop codition saat menghitung bertemu dengan math error */
@@ -90,16 +88,19 @@ int main()
             if (ekspresi[i] != '(' && ekspresi[i] != ')')
             {
                 Oper(T, j) = ekspresi[i];
-                Nilai(T, j) = NilaiUndef;
                 Prio(T, j) = Priority(ekspresi[i]) + baseprio;
             }
             else
             {
                 /* Karena kurung hanya meningkatkan prioritas suatu operasi,
                 kurung tidak dimasukkan ke array tetapi hanya menambah base priority */
-                if (ekspresi[i] == '(') baseprio += 4;
+                if (ekspresi[i] == '(') {
+                    baseprio += 4;
+                }
                 /* Jika kurung tutup sudah ditemukan, turunkan kembali base priority */
-                else baseprio -= 4;
+                else{
+                    baseprio -= 4;
+                }
                 /* Karena kurung tidak masuk array maka iterator j harus tidak berubah */
                 j--;
             }
@@ -165,10 +166,11 @@ int IdxHighPrio(Tabel T)
 {
     /* KAMUS LOKAL */
     int i;
-    int Maxtemp, Idxtemp;
+    int Maxtemp = Prio(T,0);
+    int Idxtemp;
 
     /* ALGORITMA */
-    for (i = 0; i < NEff(T); i++)
+    for (i = 1; i < NEff(T); i++)
     {
         if (Prio(T, i) > Maxtemp)
         {
@@ -192,17 +194,7 @@ void MakeUndef(Tabel *T, int i)
 {
     /* KAMUS LOKAL */
     /* ALGORITMA */
-    Nilai(*T, i) = NilaiUndef;
-    Oper(*T, i) = OperUndef;
-    Prio(*T, i) = 0;
-}
-
-boolean ElmtUndef(Tabel T, int i)
-/* Mengembalikan true bila elemen-elemen di indeks ke i adalah elemen Undef semua */
-{
-    /* KAMUS LOKAL */
-    /* ALGORITMA */
-    return (Oper(T, i) == OperUndef && Nilai(T, i) == NilaiUndef);
+    Oper(*T, i) = ElmtUndef;
 }
 
 void Rapihin(Tabel *T)
@@ -213,22 +205,31 @@ void Rapihin(Tabel *T)
 
     /* ALGORITMA */
     /* Mencari tempat pertama terjadinya kekosongan pada array */
-    while (!ElmtUndef(*T, IdxKos) && IdxKos < NEff(*T)) IdxKos++;
-    /* Mencari elemen yang tidak rapat kiri */
-    i = IdxKos;
-    while (ElmtUndef(*T, i) && i < NEff(*T)) i++;
-    /* Melakukan pemindahan */
-    for (j = i; j < NEff(*T); j++)
-    {
-        Prio(*T, IdxKos) = Prio(*T, i);
-        Oper(*T, IdxKos) = Oper(*T, i);
-        Nilai(*T, IdxKos) = Nilai(*T, i);
-        MakeUndef(T, i);
-        IdxKos++; i++;
+    while ((Oper(*T,IdxKos) != ElmtUndef) && (IdxKos < NEff(*T))) 
+        IdxKos++;
+
+    if (IdxKos == NEff(*T)){
+        if (Oper(*T,IdxKos) == ElmtUndef){
+            NEff(*T)--;
+        }
     }
-    /* Dikarenakan adanya kekosongan, maka isi elemen tabel akan berkurang */
-    j = i - IdxKos;
-    NEff(*T) -= j;
+    else{
+        /* Mencari elemen yang tidak rapat kiri */
+        i = IdxKos;
+        while ((Oper(*T,i) == ElmtUndef) && i < NEff(*T)) i++;
+        /* Melakukan pemindahan */
+        for (j = i; j < NEff(*T); j++)
+        {
+            Prio(*T, IdxKos) = Prio(*T, i);
+            Oper(*T, IdxKos) = Oper(*T, i);
+            Nilai(*T, IdxKos) = Nilai(*T, i);
+            MakeUndef(T, i);
+            IdxKos++; i++;
+        }
+        /* Dikarenakan adanya kekosongan, maka isi elemen tabel akan berkurang */
+        j = i - IdxKos;
+        NEff(*T) -= j;
+    }
 }
 
 void Hitung(Tabel *T, int i)
@@ -242,7 +243,7 @@ lalu menghapus elemen-elemen tabel yang telah dihitung */
     /* ALGORITMA */
     /* Jika elemen yang berprioritas tinggi adalah operan,
     kurangi prioritasnya menjadi selevel dengan elemen diluarnya */
-    if (Nilai(*T, i) != NilaiUndef)
+    if (Oper(*T,i) == OperUndef)
     {
         Prio(*T, i) -= 4;
     }
@@ -250,7 +251,7 @@ lalu menghapus elemen-elemen tabel yang telah dihitung */
     {
         op1 = Nilai(*T, i - 1);
         op2 = Nilai(*T, i + 1);
-         /* Menghitung hasi operasi yang sesuai dengan operatornya */
+         /* Menghitung hasil operasi yang sesuai dengan operatornya */
         switch (Oper(*T, i))
         {
             case '*':
@@ -281,8 +282,6 @@ lalu menghapus elemen-elemen tabel yang telah dihitung */
         /* Memasukkan hasil agar tetap rapat, merapikan tabel,
         membuat elemen yang telah dipakai menjadi Undefined */
         Nilai(*T, i - 1) = hasil;
-        Oper(*T, i - 1) = OperUndef;
-        Prio(*T, i - 1) = Prio(*T, i) - Priority(Oper(*T, i));
         MakeUndef(T, i);
         MakeUndef(T, i + 1);
         Rapihin(T);

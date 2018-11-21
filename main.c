@@ -13,12 +13,6 @@ int main()
     InputUser(&T,&IsSyntaxTrue);
     if (IsSyntaxTrue)
     {
-        /* printf("Syntax Benar\n");
-        printf("NEff(T) = %d\n",NEff(T));
-        for (int i=1;i<=NEff(T);i++)
-        {
-            printf ("%.2f%c| %d%c| %c\n", Nilai(T,i), 9, Prio(T,i), 9, Oper(T,i));
-        } */
         while (!IsOneElmt(T) && !MathErr)
         {
             Hitung(&T, IdxHighPrio(T));

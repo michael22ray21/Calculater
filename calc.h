@@ -23,6 +23,9 @@ typedef struct
 #define Prio(T, i) (T).matArr[i].prio
 #define Nilai(T, i) (T).matArr[i].nilai
 
+extern boolean MathErr;
+/* Untuk stop codition saat menghitung bertemu dengan math error */
+
 int Priority(char X);
 /* Mengembalikan prioritas operator relatif terhadap jenisnya,
 seperti '^' memiliki prioritas 3,'*' dan '/' memiliki prioritas 2,

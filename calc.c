@@ -5,7 +5,8 @@
 
 
 /* KAMUS GLOBAL */
-extern boolean MathErr = false; /* Untuk stop codition saat menghitung bertemu dengan math error */
+boolean MathErr = false;
+/* Untuk stop codition saat menghitung bertemu dengan math error */
 
 int Priority(char X)
 /* Mengembalikan prioritas operator relatif terhadap jenisnya,
@@ -165,6 +166,7 @@ lalu menghapus elemen-elemen tabel yang telah dihitung */
         }
         /* Memasukkan hasil agar tetap rapat, merapikan tabel,
         membuat elemen yang telah dipakai menjadi Undefined */
+        printf("%.2f %c %.2f = %.2f\n", op1, Oper(*T, i), op2, hasil);
         Nilai(*T, i - 1) = hasil;
         MakeUndef(T, i);
         MakeUndef(T, i + 1);
